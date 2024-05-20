@@ -1,2 +1,12 @@
 # MouseChat
-Chat for Communication
+Чат для коммуникаций
+
+## Установка
+Скачай зависимости:
+```
+npm install
+```
+Запусти сервер:
+```
+npm start
+```
