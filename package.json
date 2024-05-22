@@ -10,9 +10,12 @@
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
+    "compression": "^1.7.4",
     "crypto-js": "^4.2.0",
     "express.io": "^1.1.13",
+    "fs": "^0.0.1-security",
     "helmet": "^7.1.0",
+    "jsonschema": "^1.4.1",
     "socket.io": "^4.7.5"
   }
 }
