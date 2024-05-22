@@ -153,6 +153,11 @@
   let lastInput = "";
 
   function showSuggestions(input) {
+    if (input.trim() === "") {
+      suggestionsBox.style.display = "none";
+      return;
+    }
+
     if (input !== lastInput && input.trim().slice(-1) !== " ") {
       lastInput = input;
 
