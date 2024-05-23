@@ -5,7 +5,7 @@
   let uname;
   let frequentlyUsedWords = {};
   let serverWords = [];
-  let newMessages = 0; // Counter for new messages
+  let newMessages = 0;
 
   const joinUserBtn = app.querySelector(".join-screen #join-user");
   const messageInput = app.querySelector(".chat-screen #message-input");
@@ -126,15 +126,15 @@
   function scrollToBottom() {
     const messages = document.querySelector(".messages");
     messages.scrollTop = messages.scrollHeight;
-    newMessages = 0; // Reset new messages count
-    updateScrollToBottomButton(); // Update the button text and visibility
+    newMessages = 0;
+    updateScrollToBottomButton();
   }
 
   function updateScrollToBottomButton() {
     const messages = document.querySelector(".messages");
     if (isScrolledToBottom()) {
       scrollToBottomButton.style.display = "none";
-      newMessages = 0; // Reset new messages count when scrolled to bottom
+      newMessages = 0;
     } else {
       scrollToBottomButton.style.display = newMessages > 0 ? "block" : "none";
       scrollToBottomButton.textContent = `↓ ${newMessages}`;
