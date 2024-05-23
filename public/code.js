@@ -5,6 +5,7 @@
   let uname;
   let frequentlyUsedWords = {};
   let serverWords = [];
+  let newMessages = 0; // Counter for new messages
 
   const joinUserBtn = app.querySelector(".join-screen #join-user");
   const messageInput = app.querySelector(".chat-screen #message-input");
@@ -17,6 +18,13 @@
 
   suggestionsBox.classList.add("suggestions");
   app.querySelector(".typebox").appendChild(suggestionsBox);
+
+  const scrollToBottomButton = document.createElement("div");
+  scrollToBottomButton.id = "scroll-to-bottom";
+  scrollToBottomButton.classList.add("scroll-to-bottom");
+  scrollToBottomButton.style.display = "none";
+  scrollToBottomButton.textContent = "↓ 0";
+  app.querySelector(".chat-screen").appendChild(scrollToBottomButton);
 
   function joinUser() {
     let username = joinUserInput.value.trim();
@@ -83,7 +91,7 @@
         </div>
       `;
     } else if (type === "other") {
-      messageElement.classList.add("message", "other-message");
+      messageElement.classList.add("message", "other-message", "new");
       messageElement.innerHTML = `
         <div>
           <div class="name">${message.username}</div>
@@ -91,15 +99,71 @@
           <div class="timestamp">${currentTime}</div>
         </div>
       `;
+
+      if (!isScrolledToBottom()) {
+        newMessages++;
+      }
     } else if (type === "update") {
       messageElement.classList.add("update");
       messageElement.innerText = message;
     }
 
     messageContainer.appendChild(messageElement);
-    messageContainer.scrollTop =
-      messageContainer.scrollHeight - messageContainer.clientHeight;
+
+    if (type === "my") {
+      messageContainer.scrollTop =
+        messageContainer.scrollHeight - messageContainer.clientHeight;
+    }
+
+    updateScrollToBottomButton();
   }
+
+  function isScrolledToBottom() {
+    const messages = document.querySelector(".messages");
+    return messages.scrollTop === messages.scrollHeight - messages.clientHeight;
+  }
+
+  function scrollToBottom() {
+    const messages = document.querySelector(".messages");
+    messages.scrollTop = messages.scrollHeight;
+    newMessages = 0; // Reset new messages count
+    updateScrollToBottomButton(); // Update the button text and visibility
+  }
+
+  function updateScrollToBottomButton() {
+    const messages = document.querySelector(".messages");
+    if (isScrolledToBottom()) {
+      scrollToBottomButton.style.display = "none";
+      newMessages = 0; // Reset new messages count when scrolled to bottom
+    } else {
+      scrollToBottomButton.style.display = newMessages > 0 ? "block" : "none";
+      scrollToBottomButton.textContent = `↓ ${newMessages}`;
+    }
+  }
+
+  document.querySelector(".messages").addEventListener("scroll", () => {
+    const messages = document.querySelector(".messages");
+    const newMessageElements = messages.querySelectorAll(
+      ".message.other-message.new"
+    );
+
+    newMessageElements.forEach((messageElement) => {
+      const messageRect = messageElement.getBoundingClientRect();
+      const messagesRect = messages.getBoundingClientRect();
+
+      if (
+        messageRect.top >= messagesRect.top &&
+        messageRect.bottom <= messagesRect.bottom
+      ) {
+        messageElement.classList.remove("new");
+        newMessages--;
+      }
+    });
+
+    updateScrollToBottomButton();
+  });
+
+  scrollToBottomButton.addEventListener("click", scrollToBottom);
 
   function saveFrequentlyUsedWords(message) {
     const words = message.split(" ");
@@ -203,7 +267,7 @@
   function insertSuggestion(suggestion) {
     const words = lastInput.trim().split(" ");
     words[words.length - 1] = suggestion;
-    messageInput.value = words.join(" ") + " ";
+    messageInput.value = words.join(" ");
     suggestionsBox.innerHTML = "";
     suggestionsBox.style.display = "none";
   }
@@ -224,6 +288,16 @@
   messageInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       sendMessage();
+    }
+  });
+
+  messageInput.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const firstSuggestion = suggestionsBox.querySelector(".suggestion");
+      if (firstSuggestion) {
+        insertSuggestion(firstSuggestion.textContent);
+      }
     }
   });
 
@@ -259,6 +333,7 @@
 
   socket.on("chat", (message) => {
     renderMessage("other", message);
+    updateScrollToBottomButton();
   });
 
   function openWallpaperDialog() {

@@ -11,7 +11,6 @@
   "license": "GPL-3.0",
   "dependencies": {
     "compression": "^1.7.4",
-    "crypto-js": "^4.2.0",
     "express.io": "^1.1.13",
     "fs": "^0.0.1-security",
     "helmet": "^7.1.0",
