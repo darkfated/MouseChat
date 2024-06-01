@@ -74,6 +74,12 @@ body {
   background: #d28e00;
 }
 
+@media (max-width: 768px) {
+  .wallpaper-button {
+    right: 84px;
+  }
+}
+
 .error-message {
   color: #ff6b6b;
   margin-top: 10px;
